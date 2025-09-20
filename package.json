@@ -20,6 +20,6 @@
     "nodemon": "^3.0.1"
   },
   "keywords": ["nodejs", "mongodb", "mongoose", "mvc", "crud"],
-  "author": "Your Name",
+  "author": "Huynh Van Quan",
   "license": "MIT"
 }
