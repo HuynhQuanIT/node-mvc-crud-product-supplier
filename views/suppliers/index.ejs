@@ -1,0 +1,332 @@
+<%- include('../partials/header') %>
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h2 mb-2">
+                    <i class="fas fa-building text-primary me-2"></i>
+                    Quản lý Nhà cung cấp
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Nhà cung cấp</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a href="/suppliers/new" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Thêm nhà cung cấp
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-2x mb-2"></i>
+                <h4 class="mb-0"><%= suppliers.length %></h4>
+                <small>Tổng nhà cung cấp</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                <h4 class="mb-0"><%= suppliers.filter(s => s.createdAt > new Date(Date.now() - 30*24*60*60*1000)).length %></h4>
+                <small>Mới trong tháng</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-phone fa-2x mb-2"></i>
+                <h4 class="mb-0"><%= suppliers.length %></h4>
+                <small>Liên hệ active</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-star fa-2x mb-2"></i>
+                <h4 class="mb-0">A+</h4>
+                <small>Đánh giá trung bình</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-0" placeholder="Tìm kiếm nhà cung cấp..." id="searchSupplier">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select border-0" id="sortBy">
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="name">Theo tên A-Z</option>
+                            <option value="name-desc">Theo tên Z-A</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" data-view="table">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-view="card">
+                                <i class="fas fa-th"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suppliers Table -->
+<div class="row" id="tableView">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Danh sách nhà cung cấp
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="suppliersTable">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th class="border-0 ps-4">
+                                    <i class="fas fa-user me-1"></i>Tên nhà cung cấp
+                                </th>
+                                <th class="border-0">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Địa chỉ
+                                </th>
+                                <th class="border-0">
+                                    <i class="fas fa-phone me-1"></i>Số điện thoại
+                                </th>
+                                <th class="border-0">
+                                    <i class="fas fa-calendar me-1"></i>Ngày tạo
+                                </th>
+                                <th class="border-0 text-center">
+                                    <i class="fas fa-cog me-1"></i>Thao tác
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% suppliers.forEach(supplier => { %>
+                            <tr class="supplier-row">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-primary text-white me-3">
+                                            <%= supplier.name.charAt(0).toUpperCase() %>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold"><%= supplier.name %></h6>
+                                            <small class="text-muted">ID: <%= supplier._id.toString().slice(-6) %></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="<%= supplier.address %>">
+                                        <%= supplier.address %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="tel:<%= supplier.phone %>" class="text-decoration-none">
+                                        <i class="fas fa-phone-alt me-1 text-success"></i>
+                                        <%= supplier.phone %>
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span><%= supplier.createdAt.toLocaleDateString('vi-VN') %></span>
+                                        <small class="text-muted"><%= supplier.createdAt.toLocaleTimeString('vi-VN') %></small>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="/suppliers/<%= supplier._id %>" class="btn btn-sm btn-outline-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/suppliers/<%= supplier._id %>/edit" class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="confirmDelete('<%= supplier._id %>', '<%= supplier.name %>')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suppliers Cards View (Hidden by default) -->
+<div class="row d-none" id="cardView">
+    <% suppliers.forEach(supplier => { %>
+    <div class="col-md-6 col-lg-4 mb-4 supplier-card-item">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-circle bg-primary text-white me-3">
+                        <%= supplier.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                        <h5 class="mb-0"><%= supplier.name %></h5>
+                        <small class="text-muted">ID: <%= supplier._id.toString().slice(-6) %></small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
+                        <span class="small"><%= supplier.address %></span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-phone text-success me-2"></i>
+                        <a href="tel:<%= supplier.phone %>" class="text-decoration-none">
+                            <%= supplier.phone %>
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar text-info me-2"></i>
+                        <span class="small"><%= supplier.createdAt.toLocaleDateString('vi-VN') %></span>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <a href="/suppliers/<%= supplier._id %>" class="btn btn-sm btn-outline-info flex-fill">
+                        <i class="fas fa-eye me-1"></i>Xem
+                    </a>
+                    <a href="/suppliers/<%= supplier._id %>/edit" class="btn btn-sm btn-outline-warning flex-fill">
+                        <i class="fas fa-edit me-1"></i>Sửa
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('<%= supplier._id %>', '<%= supplier.name %>')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Xác nhận xóa
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa nhà cung cấp <strong id="supplierName"></strong> không?</p>
+                <p class="text-muted small">Hành động này không thể hoàn tác.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form method="POST" style="display: inline;" id="deleteForm">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.supplier-row:hover {
+    background-color: rgba(0, 123, 255, 0.02);
+}
+</style>
+
+<script>
+// View toggle
+document.querySelectorAll('[data-view]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const view = this.dataset.view;
+        
+        // Update active button
+        document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Toggle views
+        if (view === 'table') {
+            document.getElementById('tableView').classList.remove('d-none');
+            document.getElementById('cardView').classList.add('d-none');
+        } else {
+            document.getElementById('tableView').classList.add('d-none');
+            document.getElementById('cardView').classList.remove('d-none');
+        }
+    });
+});
+
+// Search functionality
+document.getElementById('searchSupplier').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    
+    // Filter table rows
+    document.querySelectorAll('.supplier-row').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+    
+    // Filter card items
+    document.querySelectorAll('.supplier-card-item').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+
+// Delete confirmation
+function confirmDelete(id, name) {
+    document.getElementById('supplierName').textContent = name;
+    document.getElementById('deleteForm').action = `/suppliers/${id}?_method=DELETE`;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+
+<%- include('../partials/footer') %>
